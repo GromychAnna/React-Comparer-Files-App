@@ -1,0 +1,37 @@
+body {
+    background: #eee;
+}
+.container {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+header {
+    background-color: #5CA96D;
+    background-image: linear-gradient(90deg, #4E905D, #6BC57F);
+    color: white;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+.header {
+    padding: 15px;
+}
+
+a.active{
+    color: #000000 !important;
+    text-decoration: underline !important;
+}
+
+.text-field {
+    margin: 20px 0;
+}
+
+.compare {
+    margin-bottom: 25px;
+}
+
+td, th {
+    padding: 8px;
+}
