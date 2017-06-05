@@ -1,5 +1,5 @@
 import React from 'react';
-import TableRow from './table-row.js';
+import TableBody from './table-body.js';
 
 class Table extends React.Component {
     constructor(props) {
@@ -16,7 +16,7 @@ class Table extends React.Component {
                         <th>Value</th>
                     </tr>
                 </thead>
-                <TableRow data={this.props.data} />
+                <TableBody data={this.props.data} />
             </table>
         );
     }

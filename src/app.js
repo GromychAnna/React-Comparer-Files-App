@@ -1,7 +1,7 @@
 import React from 'react';
 import Helper from './compare-helper.js';
 import Title from './title.js';
-import TextInput from './text-field.js';
+import TextArea from './text-area.js';
 import Table from './table.js';
 
 class ExampleApp extends React.Component{
@@ -14,7 +14,7 @@ class ExampleApp extends React.Component{
         }
     }
 
-    update(){
+    update () {
         this.setState({
             firstText: this.firstText.refs.input.value,
             secondText: this.secondText.refs.input.value
@@ -22,15 +22,10 @@ class ExampleApp extends React.Component{
     }
 
     submit () {
-        let firstTextParse = Helper.splitToStrings(this.state.firstText);
-        let secondTextParse = Helper.splitToStrings(this.state.secondText);
+        let firstTextParse = this.state.firstText.split(/\r?\n/);
+        let secondTextParse = this.state.secondText.split(/\r?\n/);
 
-        let resultArray = [];
-        let self = this;
-        if ((firstTextParse.length < secondTextParse.length)||(Helper.isEqual(firstTextParse.length, secondTextParse.length))) {
-            resultArray = Helper.compareArrays(firstTextParse, secondTextParse, self);
-        } else resultArray = Helper.compareArrays(secondTextParse, firstTextParse, self);
-
+        let resultArray = Helper.compareArrays(secondTextParse, firstTextParse);
         this.setState({result: resultArray});
     }
 
@@ -42,13 +37,13 @@ class ExampleApp extends React.Component{
                     <div className="row">
                         <div className="col-sm-12">
                             <div className="col-sm-6">
-                                <TextInput
+                                <TextArea
                                     ref={ component => this.firstText = component}
                                     update={this.update.bind(this)}
                                     />
                             </div>
                             <div className="col-sm-6">
-                                <TextInput ref={ component => this.secondText = component}
+                                <TextArea ref={ component => this.secondText = component}
                                            update={this.update.bind(this)}
                                     />
                             </div>

@@ -1,22 +1,8 @@
-const splitToStrings = (str) => {
-    let stringParsed = [];
-    let string = str.split(/\r?\n/);
-    for (var i = 0; i < string.length; i++) {
-        stringParsed[stringParsed.length] = string[i];
-    }
-    return stringParsed;
-};
-
-const isEqual = (arg1, arg2) => {
-    return arg1==arg2;
-};
-
-
 const isExistInFirstFile = (arg, array) => {
     let res = "";
     for (let i=0; i < array.length; i++) {
         if (!res) {
-            res = isEqual(arg, array[i]);
+            res = arg === array[i];
         }
     }
     return res;
@@ -26,50 +12,51 @@ const isExistInSecondFile = (arg, array) => {
     let res = "";
     for (let i=0; i < array.length; i++) {
         if (!res) {
-            res = isEqual(arg, array[i]);
+            res = arg === array[i];
         }
     }
     return res;
 };
 
-const findArrIndex = (value, array) => {
-    let index;
-    index = array.indexOf(value);
-    return index;
-};
-
-const compareArrays = (arr1, arr2, self) => {
+const compareArrays = (firstTextParse, secondTextParse) => {
     let resultArray = [];
-    debugger
+    let arr1, arr2 = '';
+    if ((firstTextParse.length < secondTextParse.length)||(firstTextParse.length === secondTextParse.length)) {
+        arr1 = firstTextParse;
+        arr2 = secondTextParse;
+    } else {
+        arr1 = secondTextParse;
+        arr2 = firstTextParse;
+    }
     while (arr2.length > 0) {
-        if (arr1[0]==undefined) {
-            while (arr2[0]!=undefined) {
+        if (arr1[0]===undefined) {
+            arr2.map(value => {
                 resultArray.push({
-                    id: resultArray.length+1,
+                    id: resultArray.length+1,//+i
                     sign: "+",
                     value: arr2[0]
                 });
                 arr2.splice(0,1);
-            }
+            });
         }
-        //Проверка 2 (на равенство):
-        // Если 1й элемент 1ого массива равен любому эл-у из 2ого массива
+        // Check 1 (for equality):
+        // If the 1st element of the 1st array is equal to any element from the 2nd array
         else
         if (isExistInSecondFile(arr1[0], arr2)) {
-            //В arr2Index запишем под каким индексом в 2ом массиве (первым найденым) найдено такое же значение как 1й элемент 1ого массива
-            let arr2Index = findArrIndex(arr1[0], arr2);
+            // In arr2Index we write under what index in the 2nd array (the first one found) the same value as the 1st element of the first array was found
+            let arr2Index = arr2.indexOf(arr1[0]);
             resultArray.push({
                 id: resultArray.length+1,
-                sign: "=",
+                sign: " ",
                 value: arr1[0]
             });
-            //удаляем найденые элементы
+            // delete found items
             arr1.splice(0,1);
             arr2.splice(arr2Index,1);
         }
-        //Проверка 3 (на изменение):
-        // Если 1й эл. 1ого массива не совпадает ни с одним эл. из 2ого массива
-        // и 1й эл 2ого массива не совпадает ни с одним эл. из 1ого массива
+        //Check 2 (for change):
+        //If the 1st element of the 1st array does not coincide with any element from the 2 nd array
+        //аnd the 1st element of the 2nd array does not coincide with any e. From the 1st array
         else if (!isExistInSecondFile(arr1[0], arr2) &&
             !isExistInFirstFile(arr2[0], arr1)) {
             resultArray.push({
@@ -80,7 +67,7 @@ const compareArrays = (arr1, arr2, self) => {
             arr1.splice(0,1);
             arr2.splice(0,1);
         }
-        //Проверка 4 (есть в 1ом массиве - нет во 2ом):
+        // Check 4 (there is in the 1st array - not in the 2nd array):
         else if (!isExistInSecondFile(arr1[0], arr2) &&
             isExistInFirstFile(arr2[0], arr1)) {
             resultArray.push({
@@ -91,16 +78,11 @@ const compareArrays = (arr1, arr2, self) => {
             arr1.splice(0,1);
         }
     }
-
-    console.log("resultArray", resultArray);
     return resultArray;
 };
 
 export default {
-    splitToStrings,
-    isEqual,
     isExistInFirstFile,
     isExistInSecondFile,
-    findArrIndex,
     compareArrays
 }

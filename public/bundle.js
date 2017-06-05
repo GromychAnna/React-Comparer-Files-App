@@ -9833,9 +9833,9 @@ var _title = __webpack_require__(93);
 
 var _title2 = _interopRequireDefault(_title);
 
-var _textField = __webpack_require__(92);
+var _textArea = __webpack_require__(92);
 
-var _textField2 = _interopRequireDefault(_textField);
+var _textArea2 = _interopRequireDefault(_textArea);
 
 var _table = __webpack_require__(91);
 
@@ -9876,15 +9876,10 @@ var ExampleApp = function (_React$Component) {
     }, {
         key: 'submit',
         value: function submit() {
-            var firstTextParse = _compareHelper2.default.splitToStrings(this.state.firstText);
-            var secondTextParse = _compareHelper2.default.splitToStrings(this.state.secondText);
+            var firstTextParse = this.state.firstText.split(/\r?\n/);
+            var secondTextParse = this.state.secondText.split(/\r?\n/);
 
-            var resultArray = [];
-            var self = this;
-            if (firstTextParse.length < secondTextParse.length || _compareHelper2.default.isEqual(firstTextParse.length, secondTextParse.length)) {
-                resultArray = _compareHelper2.default.compareArrays(firstTextParse, secondTextParse, self);
-            } else resultArray = _compareHelper2.default.compareArrays(secondTextParse, firstTextParse, self);
-
+            var resultArray = _compareHelper2.default.compareArrays(secondTextParse, firstTextParse);
             this.setState({ result: resultArray });
         }
     }, {
@@ -9908,7 +9903,7 @@ var ExampleApp = function (_React$Component) {
                             _react2.default.createElement(
                                 'div',
                                 { className: 'col-sm-6' },
-                                _react2.default.createElement(_textField2.default, {
+                                _react2.default.createElement(_textArea2.default, {
                                     ref: function ref(component) {
                                         return _this2.firstText = component;
                                     },
@@ -9918,7 +9913,7 @@ var ExampleApp = function (_React$Component) {
                             _react2.default.createElement(
                                 'div',
                                 { className: 'col-sm-6' },
-                                _react2.default.createElement(_textField2.default, { ref: function ref(component) {
+                                _react2.default.createElement(_textArea2.default, { ref: function ref(component) {
                                         return _this2.secondText = component;
                                     },
                                     update: this.update.bind(this)
@@ -9977,24 +9972,11 @@ module.exports = __webpack_require__(107);
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-var splitToStrings = function splitToStrings(str) {
-    var stringParsed = [];
-    var string = str.split(/\r?\n/);
-    for (var i = 0; i < string.length; i++) {
-        stringParsed[stringParsed.length] = string[i];
-    }
-    return stringParsed;
-};
-
-var isEqual = function isEqual(arg1, arg2) {
-    return arg1 == arg2;
-};
-
 var isExistInFirstFile = function isExistInFirstFile(arg, array) {
     var res = "";
     for (var i = 0; i < array.length; i++) {
         if (!res) {
-            res = isEqual(arg, array[i]);
+            res = arg === array[i];
         }
     }
     return res;
@@ -10004,49 +9986,51 @@ var isExistInSecondFile = function isExistInSecondFile(arg, array) {
     var res = "";
     for (var i = 0; i < array.length; i++) {
         if (!res) {
-            res = isEqual(arg, array[i]);
+            res = arg === array[i];
         }
     }
     return res;
 };
 
-var findArrIndex = function findArrIndex(value, array) {
-    var index = void 0;
-    index = array.indexOf(value);
-    return index;
-};
-
-var compareArrays = function compareArrays(arr1, arr2, self) {
+var compareArrays = function compareArrays(firstTextParse, secondTextParse) {
     var resultArray = [];
-    debugger;
+    var arr1 = void 0,
+        arr2 = '';
+    if (firstTextParse.length < secondTextParse.length || firstTextParse.length === secondTextParse.length) {
+        arr1 = firstTextParse;
+        arr2 = secondTextParse;
+    } else {
+        arr1 = secondTextParse;
+        arr2 = firstTextParse;
+    }
     while (arr2.length > 0) {
-        if (arr1[0] == undefined) {
-            while (arr2[0] != undefined) {
+        if (arr1[0] === undefined) {
+            arr2.map(function (value) {
                 resultArray.push({
-                    id: resultArray.length + 1,
+                    id: resultArray.length + 1, //+i
                     sign: "+",
                     value: arr2[0]
                 });
                 arr2.splice(0, 1);
-            }
+            });
         }
-        //Проверка 2 (на равенство):
-        // Если 1й элемент 1ого массива равен любому эл-у из 2ого массива
+        // Check 1 (for equality):
+        // If the 1st element of the 1st array is equal to any element from the 2nd array
         else if (isExistInSecondFile(arr1[0], arr2)) {
-                //В arr2Index запишем под каким индексом в 2ом массиве (первым найденым) найдено такое же значение как 1й элемент 1ого массива
-                var arr2Index = findArrIndex(arr1[0], arr2);
+                // In arr2Index we write under what index in the 2nd array (the first one found) the same value as the 1st element of the first array was found
+                var arr2Index = arr2.indexOf(arr1[0]);
                 resultArray.push({
                     id: resultArray.length + 1,
-                    sign: "=",
+                    sign: " ",
                     value: arr1[0]
                 });
-                //удаляем найденые элементы
+                // delete found items
                 arr1.splice(0, 1);
                 arr2.splice(arr2Index, 1);
             }
-            //Проверка 3 (на изменение):
-            // Если 1й эл. 1ого массива не совпадает ни с одним эл. из 2ого массива
-            // и 1й эл 2ого массива не совпадает ни с одним эл. из 1ого массива
+            //Check 2 (for change):
+            //If the 1st element of the 1st array does not coincide with any element from the 2 nd array
+            //аnd the 1st element of the 2nd array does not coincide with any e. From the 1st array
             else if (!isExistInSecondFile(arr1[0], arr2) && !isExistInFirstFile(arr2[0], arr1)) {
                     resultArray.push({
                         id: resultArray.length + 1,
@@ -10056,7 +10040,7 @@ var compareArrays = function compareArrays(arr1, arr2, self) {
                     arr1.splice(0, 1);
                     arr2.splice(0, 1);
                 }
-                //Проверка 4 (есть в 1ом массиве - нет во 2ом):
+                // Check 4 (there is in the 1st array - not in the 2nd array):
                 else if (!isExistInSecondFile(arr1[0], arr2) && isExistInFirstFile(arr2[0], arr1)) {
                         resultArray.push({
                             id: resultArray.length + 1,
@@ -10066,17 +10050,12 @@ var compareArrays = function compareArrays(arr1, arr2, self) {
                         arr1.splice(0, 1);
                     }
     }
-
-    console.log("resultArray", resultArray);
     return resultArray;
 };
 
 exports.default = {
-    splitToStrings: splitToStrings,
-    isEqual: isEqual,
     isExistInFirstFile: isExistInFirstFile,
     isExistInSecondFile: isExistInSecondFile,
-    findArrIndex: findArrIndex,
     compareArrays: compareArrays
 };
 
@@ -10126,37 +10105,37 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var TableRow = function (_React$Component) {
-    _inherits(TableRow, _React$Component);
+var TableBody = function (_React$Component) {
+    _inherits(TableBody, _React$Component);
 
-    function TableRow() {
-        _classCallCheck(this, TableRow);
+    function TableBody() {
+        _classCallCheck(this, TableBody);
 
-        return _possibleConstructorReturn(this, (TableRow.__proto__ || Object.getPrototypeOf(TableRow)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (TableBody.__proto__ || Object.getPrototypeOf(TableBody)).apply(this, arguments));
     }
 
-    _createClass(TableRow, [{
+    _createClass(TableBody, [{
         key: 'render',
         value: function render() {
             var data = this.props.data;
 
-            var row = data.map(function (data) {
+            var rows = data.map(function (data) {
                 return _react2.default.createElement(
                     'tr',
-                    null,
+                    { key: data.id },
                     _react2.default.createElement(
                         'td',
-                        { key: data.id },
+                        null,
                         data.id
                     ),
                     _react2.default.createElement(
                         'td',
-                        { key: data.sign },
+                        null,
                         data.sign
                     ),
                     _react2.default.createElement(
                         'td',
-                        { key: data.value },
+                        null,
                         data.value
                     )
                 );
@@ -10164,15 +10143,15 @@ var TableRow = function (_React$Component) {
             return _react2.default.createElement(
                 'tbody',
                 null,
-                row
+                rows
             );
         }
     }]);
 
-    return TableRow;
+    return TableBody;
 }(_react2.default.Component);
 
-exports.default = TableRow;
+exports.default = TableBody;
 
 /***/ }),
 /* 91 */
@@ -10276,23 +10255,22 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var TextInput = function (_React$Component) {
-    _inherits(TextInput, _React$Component);
+var TextArea = function (_React$Component) {
+    _inherits(TextArea, _React$Component);
 
-    function TextInput() {
-        _classCallCheck(this, TextInput);
+    function TextArea() {
+        _classCallCheck(this, TextArea);
 
-        return _possibleConstructorReturn(this, (TextInput.__proto__ || Object.getPrototypeOf(TextInput)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (TextArea.__proto__ || Object.getPrototypeOf(TextArea)).apply(this, arguments));
     }
 
-    _createClass(TextInput, [{
+    _createClass(TextArea, [{
         key: "render",
         value: function render() {
             return _react2.default.createElement(
                 "div",
                 null,
                 _react2.default.createElement("textarea", { ref: "input",
-                    type: "text",
                     className: "form-control text-field",
                     placeholder: "Type Text",
                     onChange: this.props.update })
@@ -10300,10 +10278,10 @@ var TextInput = function (_React$Component) {
         }
     }]);
 
-    return TextInput;
+    return TextArea;
 }(_react2.default.Component);
 
-exports.default = TextInput;
+exports.default = TextArea;
 
 /***/ }),
 /* 93 */
